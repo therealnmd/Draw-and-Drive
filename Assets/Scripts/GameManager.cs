@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject winPanel;
     public GameObject drawLineObject;
     public GameObject playButton;
+    public GameObject[] guides;
 
     public CarController car;
 
@@ -31,8 +32,17 @@ public class GameManager : MonoBehaviour
         startPanel.SetActive(true);
         winPanel.SetActive(false);
         playButton.SetActive(false);
+        
         car.ResetPosition();     
         car.SetKinematic();
+
+        foreach (var g in guides)
+        {
+            if (g != null)
+            {
+                g.SetActive(false);
+            }
+        }
     }
 
     public void StartGame()
@@ -46,6 +56,14 @@ public class GameManager : MonoBehaviour
         InkSystem.Instance.ResetInk();
 
         drawLine.StartDrawing();
+
+        foreach (var g in guides)
+        {
+            if (g != null)
+            {
+                g.SetActive(true);
+            }
+        }
     }
 
     public void OnFinishDrawing()

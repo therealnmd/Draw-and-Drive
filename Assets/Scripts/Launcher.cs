@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class Launcher : MonoBehaviour
 {
-    public float launchForce = 300f;
+    public float jumpForce = 30f;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            Rigidbody2D rb = collision.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            CarController car = collision.GetComponent<CarController>();
+            if (car != null)
             {
-                rb.AddForce(Vector2.up * launchForce);
+                car.JumpPad(jumpForce);
             }
         }
     }

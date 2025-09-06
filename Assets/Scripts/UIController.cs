@@ -8,10 +8,12 @@ public class UIController : MonoBehaviour
     public Button playButton;
     public DrawLine drawLine;
     public GameManager gameManager;
+    
 
     void Start()
     {
         playButton.onClick.AddListener(OnPlayClicked);
+        
     }
 
     void OnPlayClicked()

@@ -76,6 +76,11 @@ public class CarController : MonoBehaviour
         moveForce = originalForce;
     }
 
+    public void JumpPad(float jumpForce)
+    {
+        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+    }
+
     public Rigidbody2D GetRigidbody()
     {
         return rb;
