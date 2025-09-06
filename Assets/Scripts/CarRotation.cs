@@ -4,49 +4,6 @@ using UnityEngine;
 
 public class CarRotation : MonoBehaviour
 {
-    //[Header("Cấu hình raycast")]
-    //public float rayLength = 1.5f;
-    //public LayerMask groundLayer;
-
-    //[Header("Cấu hình xoay mượt")]
-    //public float rotationSpeed = 5f;
-
-    //void Update()
-    //{
-    //    // Bắn ray từ vị trí xe xuống
-    //    RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, rayLength, groundLayer);
-
-    //    if (hit.collider != null)
-    //    {
-    //        Vector2 normal = hit.normal;
-    //        Vector2 tangent = new Vector2(normal.y, -normal.x);
-
-    //        // Đảm bảo luôn hướng phải (không quay về trái)
-    //        if (tangent.x < 0)
-    //            tangent = -tangent;
-
-    //        // Tính góc cần xoay quanh trục Z
-    //        float angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
-
-    //        // Tạo góc hiện tại giữ Y = 180, chỉ thay đổi Z
-    //        Vector3 currentEuler = transform.eulerAngles;
-    //        float newZ = Mathf.LerpAngle(currentEuler.z, angle, rotationSpeed * Time.deltaTime);
-    //        transform.eulerAngles = new Vector3(0, 180, newZ); // giữ Y = 180
-    //    }
-    //    else
-    //    {
-    //        // Không chạm đất => vẫn giữ Y = 180, Z dần về 0
-    //        Vector3 currentEuler = transform.eulerAngles;
-    //        float newZ = Mathf.LerpAngle(currentEuler.z, 0f, rotationSpeed * Time.deltaTime);
-    //        transform.eulerAngles = new Vector3(0, 180, newZ);
-    //    }
-    //}
-
-    //void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawLine(transform.position, transform.position + Vector3.down * rayLength);
-    //}
     [Header("Cấu hình raycast")]
     public float rayLength = 1.5f; // Chiều dài raycast xuống
     public LayerMask groundLayer;

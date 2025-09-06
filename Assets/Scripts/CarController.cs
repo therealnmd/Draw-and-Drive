@@ -60,9 +60,7 @@ public class CarController : MonoBehaviour
         transform.rotation = startRot;
         SetKinematic();
         hasTouchedGround = false;  
-        //transform.rotation = Quaternion.identity;
-        // Khóa lại vật lý để không rơi xuống
-        //rb.bodyType = RigidbodyType2D.Kinematic;
+       
     }
 
     public void Boost(float boostForce, float duration)

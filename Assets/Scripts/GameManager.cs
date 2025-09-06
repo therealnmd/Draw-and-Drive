@@ -10,9 +10,12 @@ public class GameManager : MonoBehaviour
     public GameObject winPanel;
     public GameObject drawLineObject;
     public GameObject playButton;
+
     public CarController car;
 
     private DrawLine drawLine;
+
+    public ParticleSystem[] confettiEffect;
 
     private bool isGameWin = false;
 
@@ -28,8 +31,7 @@ public class GameManager : MonoBehaviour
         startPanel.SetActive(true);
         winPanel.SetActive(false);
         playButton.SetActive(false);
-        //car.StopMovement();
-        car.ResetPosition();      // xe đứng yên
+        car.ResetPosition();     
         car.SetKinematic();
     }
 
@@ -40,14 +42,15 @@ public class GameManager : MonoBehaviour
         playButton.SetActive(false);
 
         car.ResetPosition();
-        //car.StartMovement();
+
+        InkSystem.Instance.ResetInk();
 
         drawLine.StartDrawing();
     }
 
     public void OnFinishDrawing()
     {
-        
+
         // 👉 gọi từ script DrawLine khi người chơi vẽ xong
         playButton.SetActive(true);
     }
@@ -56,6 +59,7 @@ public class GameManager : MonoBehaviour
     {
         car.StartMovement();
         playButton.SetActive(false); // ẩn Play sau khi bấm
+        drawLine.StopDrawing();
     }
 
 
@@ -71,7 +75,22 @@ public class GameManager : MonoBehaviour
     {
         isGameWin = true;
         car.StopMovement();
-        winPanel.SetActive(true);
+
+        float inkPercent = InkSystem.Instance.GetInkPercent();
+        InkUIController.Instance.UpdateStars(inkPercent);
+
+        if (confettiEffect != null && confettiEffect.Length > 0)
+        {
+            foreach (ParticleSystem confetti in confettiEffect)
+            {
+                if (confetti != null)
+                {
+                    confetti.Play();
+                    winPanel.SetActive(true);
+                }
+            }
+        }
+        
     }
 
     public void HitEnd()
@@ -83,6 +102,24 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Menu");
         Time.timeScale = 1;
     }
+    public void Continue()
+    {
+        int sceneHienTai = SceneManager.GetActiveScene().buildIndex;
+
+        // Check if there is a next scene
+        if (sceneHienTai < SceneManager.sceneCountInBuildSettings - 1)
+        {
+            // Load the next scene
+            SceneManager.LoadScene(sceneHienTai + 1);
+        }
+        else
+        {
+            Debug.Log("Chưa có màn mới, cảm ơn đã chơi hết!");
+        }
+
+        Time.timeScale = 1; // Unfreeze the game
+    }
+
     public bool IsGameWin()
     {
         return isGameWin;
