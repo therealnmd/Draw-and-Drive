@@ -108,7 +108,15 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
+
+        foreach (var g in guides)
+        {
+            if (g != null)
+            {
+                g.SetActive(false);
+            }
+        }
+
     }
 
     public void HitEnd()
