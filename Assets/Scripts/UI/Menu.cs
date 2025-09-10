@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
+    [SerializeField] GameObject levelPanel;
     public void PlayGame()
     {
         SceneManager.LoadScene("Lv1");
@@ -13,5 +14,11 @@ public class Menu : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void Close()
+    {
+        levelPanel.SetActive(false);
+        Time.timeScale = 1f;
     }
 }

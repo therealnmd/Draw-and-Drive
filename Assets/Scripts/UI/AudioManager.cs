@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,6 +26,12 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         PlayMusic("bgm");
+
+        float savedMusicVol = PlayerPrefs.GetFloat("MusicVolume", 1f); 
+        float savedSfxVol = PlayerPrefs.GetFloat("SFXVolume", 1f);    
+
+        musicSource.volume = savedMusicVol;
+        sfxSource.volume = savedSfxVol;
     }
 
     public void PlayMusic(string name)
@@ -83,10 +89,12 @@ public class AudioManager : MonoBehaviour
     public void MusicVolume(float volume)
     {
         musicSource.volume = volume;
+        PlayerPrefs.SetFloat("MusicVolume", volume);
     }
 
     public void SFXVolume(float volume)
     {
-        sfxSource.volume = volume;  
+        sfxSource.volume = volume;
+        PlayerPrefs.SetFloat("SFXVolume", volume);
     }
 }

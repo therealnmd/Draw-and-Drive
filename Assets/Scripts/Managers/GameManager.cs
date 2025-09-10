@@ -3,20 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Panels")]
     public GameObject startPanel;
     public GameObject winPanel;
     public GameObject drawLineObject;
     public GameObject playButton;
     public GameObject[] guides;
 
+    [Header("References")]
     public CarController car;
-
     private DrawLine drawLine;
 
+    [Header("Effects")]
     public ParticleSystem[] confettiEffect;
+
+    [Header("Stars")]
+    public Image[] starsUnderInk;
+    public Image[] starsWinPanel;
 
     private bool isGameWin = false;
 
@@ -98,7 +105,12 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.PlaySFX("win");
 
         float inkPercent = InkSystem.Instance.GetInkPercent();
-        InkUIController.Instance.UpdateStars(inkPercent);
+        int starsEarned = CalculateStars(inkPercent);
+
+        for (int i = 0; i < starsWinPanel.Length; i++)
+        {
+            starsWinPanel[i].enabled = (i < starsEarned);
+        }
 
         if (confettiEffect != null && confettiEffect.Length > 0)
         {
@@ -120,6 +132,24 @@ public class GameManager : MonoBehaviour
             }
         }
 
+    }
+
+    private int CalculateStars(float inkPercent)
+    {
+        if (inkPercent > 0.7f) return 3;
+        else if (inkPercent > 0.4f) return 2;
+        else if (inkPercent > 0.1f) return 1;
+        return 0;
+    }
+
+    public void UpdateStarsInGame(float inkPercent)
+    {
+        int starsEarned = CalculateStars(inkPercent);
+
+        for (int i = 0; i < starsUnderInk.Length; i++)
+        {
+            starsUnderInk[i].color = (i < starsEarned) ? Color.red : Color.gray;
+        }
     }
 
     public void HitEnd()

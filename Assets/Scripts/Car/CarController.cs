@@ -11,7 +11,6 @@ public class CarController : MonoBehaviour
     private bool isMoving = false;
     private bool hasTouchedGround = false;
 
-
     private GameManager gameManager;
     private void Awake()
     {

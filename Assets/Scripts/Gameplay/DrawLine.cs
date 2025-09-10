@@ -1,22 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class DrawLine : MonoBehaviour
 {
+    [Header("Ink")]
     public float maxInkLength = 20f;
     public float minDistance = 0.1f;
 
+    [Header("Lines")]
     public GameObject linePrefab;
-
     private LineRenderer lineRenderer;
     private EdgeCollider2D edgeCollider;
     private List<Vector2> points = new List<Vector2>();
     private float currentLength = 0f;
 
-    private bool isDrawingEnabled = false; // ✅ Được phép vẽ chưa
+    private bool isDrawingEnabled = false;
     private bool isDrawing = false;
-    //private bool hasDrawn = false; // ✅ Đã vẽ xong rồi thì không cho vẽ nữa
     void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
@@ -27,6 +28,9 @@ public class DrawLine : MonoBehaviour
     void Update()
     {
         if (!isDrawingEnabled) return;
+
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
 
         if (Input.GetMouseButtonDown(0))
         {

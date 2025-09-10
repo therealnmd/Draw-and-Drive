@@ -33,6 +33,11 @@ public class InkSystem : MonoBehaviour
         {
             currentInk -= amount;
             InkUIController.Instance.UpdateInkBar(currentInk / maxInk);
+            GameManager gameManager = FindObjectOfType<GameManager>();
+            if (gameManager != null)
+            {
+                gameManager.UpdateStarsInGame(currentInk / maxInk);
+            }
             return true;
         }
         return false; // hết mực
