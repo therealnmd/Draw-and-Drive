@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
     public GameObject drawLineObject;
     public GameObject playButton;
     public GameObject[] guides;
+    public GameObject starScoreUI;
 
     [Header("References")]
     public CarController car;
@@ -25,6 +27,10 @@ public class GameManager : MonoBehaviour
     public Image[] starsUnderInk;
     public Image[] starsWinPanel;
 
+    [Header("Total Stars UI")]
+    public TMP_Text totalStarsText;
+    private static int totalStars = 0;
+
     private bool isGameWin = false;
 
     // Start is called before the first frame update
@@ -33,6 +39,9 @@ public class GameManager : MonoBehaviour
         drawLine = drawLineObject.GetComponent<DrawLine>();
         ShowStartUI();
         AudioManager.Instance.PlayMusic("bgm");
+
+        totalStars = PlayerPrefs.GetInt("TotalStars", 0);
+        UpdateTotalStarsUI();
     }
 
     public void ShowStartUI()
@@ -40,7 +49,8 @@ public class GameManager : MonoBehaviour
         startPanel.SetActive(true);
         winPanel.SetActive(false);
         playButton.SetActive(false);
-        
+        starScoreUI.SetActive(false);
+
         car.ResetPosition();     
         car.SetKinematic();
 
@@ -58,6 +68,7 @@ public class GameManager : MonoBehaviour
         startPanel.SetActive(false);
         winPanel.SetActive(false);
         playButton.SetActive(false);
+        starScoreUI.SetActive(true);
 
         car.ResetPosition();
 
@@ -86,6 +97,7 @@ public class GameManager : MonoBehaviour
         car.StartMovement();
         playButton.SetActive(false); // ẩn Play sau khi bấm
         drawLine.StopDrawing();
+        starScoreUI.SetActive(true);
     }
 
 
@@ -101,11 +113,14 @@ public class GameManager : MonoBehaviour
     {
         isGameWin = true;
         car.StopMovement();
+        starScoreUI.SetActive(false);
         AudioManager.Instance.musicSource.Stop();
         AudioManager.Instance.PlaySFX("win");
 
         float inkPercent = InkSystem.Instance.GetInkPercent();
         int starsEarned = CalculateStars(inkPercent);
+
+        SaveStarsForLevel(starsEarned);
 
         for (int i = 0; i < starsWinPanel.Length; i++)
         {
@@ -150,6 +165,39 @@ public class GameManager : MonoBehaviour
         {
             starsUnderInk[i].color = (i < starsEarned) ? Color.red : Color.gray;
         }
+    }
+    private void UpdateTotalStarsUI()
+    {
+        if (totalStarsText != null)
+        {
+            totalStarsText.text = ": " + totalStars.ToString();
+        }
+    }
+
+    private void SaveStarsForLevel(int starsEarned)
+    {
+        int currentLevel = SceneManager.GetActiveScene().buildIndex;
+        string key = "LevelStars_" + currentLevel;
+
+        int oldStars = PlayerPrefs.GetInt(key, 0);
+
+        if (starsEarned > oldStars)
+        {
+            PlayerPrefs.SetInt(key, starsEarned);
+        }
+
+        // Tính lại tổng từ đầu
+        totalStars = 0;
+        int totalLevels = SceneManager.sceneCountInBuildSettings;
+        for (int i = 0; i < totalLevels; i++)
+        {
+            totalStars += PlayerPrefs.GetInt("LevelStars_" + i, 0);
+        }
+
+        PlayerPrefs.SetInt("TotalStars", totalStars);
+        PlayerPrefs.Save();
+
+        UpdateTotalStarsUI();
     }
 
     public void HitEnd()
