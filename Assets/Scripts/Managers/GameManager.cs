@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     public GameObject drawLineObject;
     public GameObject playButton;
     public GameObject[] guides;
-    //public GameObject starScoreUI;
 
     [Header("References")]
     public CarController car;
@@ -29,9 +28,6 @@ public class GameManager : MonoBehaviour
 
     [Header("Ink UI")]
     public TMP_Text inkPercentText;
-    //[Header("Total Stars UI")]
-    //public TMP_Text totalStarsText;
-    //private static int totalStars = 0;
 
     private bool isGameWin = false;
 
@@ -41,9 +37,6 @@ public class GameManager : MonoBehaviour
         drawLine = drawLineObject.GetComponent<DrawLine>();
         ShowStartUI();
         AudioManager.Instance.PlayMusic("bgm");
-
-        //totalStars = PlayerPrefs.GetInt("TotalStars", 0);
-        //UpdateTotalStarsUI();
     }
 
     public void ShowStartUI()
@@ -51,7 +44,6 @@ public class GameManager : MonoBehaviour
         startPanel.SetActive(true);
         winPanel.SetActive(false);
         playButton.SetActive(false);
-        //starScoreUI.SetActive(false);
 
         car.ResetPosition();     
         car.SetKinematic();
@@ -70,7 +62,6 @@ public class GameManager : MonoBehaviour
         startPanel.SetActive(false);
         winPanel.SetActive(false);
         playButton.SetActive(false);
-        //starScoreUI.SetActive(true);
 
         car.ResetPosition();
 
@@ -87,26 +78,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //sau khi vẽ xong
     public void OnFinishDrawing()
     {
-
-        // 👉 gọi từ script DrawLine khi người chơi vẽ xong
         playButton.SetActive(true);
     }
 
+    //xe chạy
     public void PlayCar()
     {
         car.StartMovement();
-        playButton.SetActive(false); // ẩn Play sau khi bấm
+        playButton.SetActive(false);
         drawLine.StopDrawing();
-        //starScoreUI.SetActive(true);
     }
-
 
     public void RestartGame()
     {
-        drawLineObject.SetActive(false);
-        drawLineObject.SetActive(true); // reload line
         ShowStartUI();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -115,7 +102,6 @@ public class GameManager : MonoBehaviour
     {
         isGameWin = true;
         car.StopMovement();
-        //starScoreUI.SetActive(false);
         AudioManager.Instance.musicSource.Stop();
         AudioManager.Instance.PlaySFX("win");
 
@@ -123,7 +109,6 @@ public class GameManager : MonoBehaviour
         int starsEarned = CalculateStars(inkPercent);
 
         float inkUsedPercent = (1f - inkPercent) * 100f;
-        //SaveStarsForLevel(starsEarned);
 
         for (int i = 0; i < starsWinPanel.Length; i++)
         {
@@ -135,6 +120,7 @@ public class GameManager : MonoBehaviour
             inkPercentText.text = $"{inkUsedPercent:F1}%";
         }
 
+        //hiệu ứng pháo hoa
         if (confettiEffect != null && confettiEffect.Length > 0)
         {
             foreach (ParticleSystem confetti in confettiEffect)
@@ -147,6 +133,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        //gợi ý
         foreach (var g in guides)
         {
             if (g != null)
@@ -157,6 +144,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+    //tính sao
     private int CalculateStars(float inkPercent)
     {
         if (inkPercent > 0.7f) return 3;
@@ -165,48 +153,23 @@ public class GameManager : MonoBehaviour
         return 0;
     }
 
+    //hiển thị sao dưới thanh mực
     public void UpdateStarsInGame(float inkPercent)
     {
         int starsEarned = CalculateStars(inkPercent);
 
         for (int i = 0; i < starsUnderInk.Length; i++)
         {
-            starsUnderInk[i].color = (i < starsEarned) ? Color.yellow : Color.gray;
+            if (i < starsEarned)
+            {
+                starsUnderInk[i].color = Color.yellow;
+            }
+            else
+            {
+                starsUnderInk[i].color = Color.gray;
+            }
         }
     }
-    //private void UpdateTotalStarsUI()
-    //{
-    //    if (totalStarsText != null)
-    //    {
-    //        totalStarsText.text = ": " + totalStars.ToString();
-    //    }
-    //}
-
-    //private void SaveStarsForLevel(int starsEarned)
-    //{
-    //    int currentLevel = SceneManager.GetActiveScene().buildIndex;
-    //    string key = "LevelStars_" + currentLevel;
-
-    //    int oldStars = PlayerPrefs.GetInt(key, 0);
-
-    //    if (starsEarned > oldStars)
-    //    {
-    //        PlayerPrefs.SetInt(key, starsEarned);
-    //    }
-
-    //    // Tính lại tổng từ đầu
-    //    totalStars = 0;
-    //    int totalLevels = SceneManager.sceneCountInBuildSettings;
-    //    for (int i = 0; i < totalLevels; i++)
-    //    {
-    //        totalStars += PlayerPrefs.GetInt("LevelStars_" + i, 0);
-    //    }
-
-    //    PlayerPrefs.SetInt("TotalStars", totalStars);
-    //    PlayerPrefs.Save();
-
-    //    UpdateTotalStarsUI();
-    //}
 
     public void HitEnd()
     {
@@ -217,14 +180,13 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Menu");
         Time.timeScale = 1;
     }
+
     public void Continue()
     {
         int sceneHienTai = SceneManager.GetActiveScene().buildIndex;
 
-        // Check if there is a next scene
         if (sceneHienTai < SceneManager.sceneCountInBuildSettings - 1)
         {
-            // Load the next scene
             SceneManager.LoadScene(sceneHienTai + 1);
         }
         else
@@ -232,9 +194,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("Chưa có màn mới, cảm ơn đã chơi hết!");
         }
 
-        Time.timeScale = 1; // Unfreeze the game
+        Time.timeScale = 1; 
     }
 
+    //review màn chơi
     public void Review()
     {
         winPanel.SetActive(false);

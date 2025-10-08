@@ -14,7 +14,7 @@ public class DrawLine : MonoBehaviour
     private LineRenderer lineRenderer;
     private EdgeCollider2D edgeCollider;
     private List<Vector2> points = new List<Vector2>();
-    private float currentLength = 0f;
+    private float currentLength = 0f; //tổng chiều dài đường vẽ
 
     private bool isDrawingEnabled = false;
     private bool isDrawing = false;
@@ -29,9 +29,11 @@ public class DrawLine : MonoBehaviour
     {
         if (!isDrawingEnabled) return;
 
+        //kiểm tra xem con trỏ chuột có đang ở chỗ UI hay k, nếu có thì k cho vẽ
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             return;
 
+        //khi nhấn chuột trái thì bắt đầu vẽ
         if (Input.GetMouseButtonDown(0))
         {
             BeginDrawing();
@@ -40,17 +42,24 @@ public class DrawLine : MonoBehaviour
         if (Input.GetMouseButton(0) && isDrawing)
         {
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //tính khoảng cách từ điểm cuối cùng đã vẽ đến vị trí chuột hiện tại, nếu khoảng cách đủ lớn thì mới thêm điểm mới
             if (points.Count == 0 || Vector2.Distance(points[points.Count - 1], mousePos) >= minDistance)
             {
-                float segmentLength = points.Count > 0 ? Vector2.Distance(points[points.Count - 1], mousePos) : 0;
-                if (InkSystem.Instance.currentInk - segmentLength >= 0)
+                float segmentLength = 0f; //đoạn đường vẽ
+                if (points.Count > 0)
                 {
-                    if (InkSystem.Instance.UseInk(segmentLength))
-                    {
-                        points.Add(mousePos);
-                        currentLength += segmentLength;
-                        UpdateLine();
-                    }
+                    segmentLength = Vector2.Distance(points[points.Count-1], mousePos);
+                }
+                else
+                {
+                    segmentLength = 0f;
+                }
+                //trừ đi lượng mực = chiều dài đoạn vừa vẽ
+                if (InkSystem.Instance.UseInk(segmentLength))
+                {
+                    points.Add(mousePos);
+                    currentLength += segmentLength;
+                    UpdateLine();
                 }
             }
         }
@@ -63,6 +72,7 @@ public class DrawLine : MonoBehaviour
         }
     }
 
+    //cho phép vẽ
     public void StartDrawing()
     {
 
@@ -70,24 +80,27 @@ public class DrawLine : MonoBehaviour
         isDrawing = false;
     }
 
+    public void StopDrawing()
+    {
+        isDrawingEnabled = false;
+        isDrawing = false;
+    }
+
+    //bắt đầu vẽ
     private void BeginDrawing()
     {
         GameObject newLine = Instantiate(linePrefab);
         lineRenderer = newLine.GetComponent<LineRenderer>();
         edgeCollider = newLine.GetComponent<EdgeCollider2D>();
-
+        //khởi tạo danh sách rỗng
         points = new List<Vector2>();
+        //tổng chiều dài đường vẽ
         currentLength = 0f;
 
-        lineRenderer.positionCount = 0;
-        edgeCollider.points = new Vector2[0];
+        lineRenderer.positionCount = 0; //chưa vẽ điểm nào 
+        edgeCollider.points = new Vector2[0]; //chưa gán collider vào đâu cả
 
         isDrawing = true;
-    }
-
-    public void StopDrawing()
-    {
-        isDrawingEnabled = false; // 🚫 Sau khi bấm Play thì tắt vẽ
     }
 
     void UpdateLine()
@@ -97,7 +110,7 @@ public class DrawLine : MonoBehaviour
         for (int i = 0; i < points.Count; i++)
             lineRenderer.SetPosition(i, points[i]);
 
-        // ✅ Cập nhật collider: cần ít nhất 2 điểm
+        //ít nhất 2 điểm tạo 1 đường
         if (points.Count > 1)
         {
             Vector2[] colliderPoints = new Vector2[points.Count];
@@ -105,6 +118,7 @@ public class DrawLine : MonoBehaviour
             {
                 colliderPoints[i] = lineRenderer.transform.InverseTransformPoint(points[i]);
             }
+            //gán các điểm cho collider, để tạo va chạm
             edgeCollider.points = colliderPoints;
         }
     }

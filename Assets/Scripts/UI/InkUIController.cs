@@ -18,14 +18,15 @@ public class InkUIController : MonoBehaviour
 
     public void UpdateInkBar(float fillAmount)
     {
-        //if (inkBar != null)
-        //    inkBar.fillAmount = Mathf.Clamp01(fillAmount);
         if (inkBar != null)
         {
+            //đặt currentInk / maxInk về khoảng [0,1]
             float percent = Mathf.Clamp01(fillAmount);
+
+            //thuộc tính fillAmount của Unity UI, hiển thị phần trăm được tô đầy
             inkBar.fillAmount = percent;
 
-            // ⭐ Đổi màu khi mực trong khoảng 1 sao (0.1f – 0.4f)
+            //đổi màu khi mực trong khoảng 1 sao (0.1f – 0.4f)
             if (percent <= 0.4f && percent > 0.1f)
             {
                 inkBar.color = Color.red;

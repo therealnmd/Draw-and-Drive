@@ -8,7 +8,6 @@ public class AudioSlider : MonoBehaviour
     public enum SliderType { Music, SFX }
     public SliderType sliderType;
     private Slider slider;
-
     private void Start()
     {
         slider = GetComponent<Slider>();

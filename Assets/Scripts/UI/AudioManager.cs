@@ -88,13 +88,19 @@ public class AudioManager : MonoBehaviour
 
     public void MusicVolume(float volume)
     {
-        musicSource.volume = volume;
-        PlayerPrefs.SetFloat("MusicVolume", volume);
+        if (musicSource != null)
+        {
+            musicSource.volume = volume;
+            PlayerPrefs.SetFloat("MusicVolume", volume);
+        }
     }
 
     public void SFXVolume(float volume)
     {
-        sfxSource.volume = volume;
-        PlayerPrefs.SetFloat("SFXVolume", volume);
+        if (sfxSource != null)
+        {
+            sfxSource.volume = volume;
+            PlayerPrefs.SetFloat("SFXVolume", volume);
+        }
     }
 }

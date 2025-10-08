@@ -20,15 +20,13 @@ public class CarController : MonoBehaviour
 
         gameManager = FindAnyObjectByType<GameManager>();
 
-        // Set car không bị rơi xuống khi chưa bắt đầu
+        //xe sẽ k bị rơi khi chưa bắt đầu
         rb.bodyType = RigidbodyType2D.Kinematic;
-
-        
     }
 
     private void FixedUpdate()
     {
-        if (isMoving && rb.bodyType == RigidbodyType2D.Dynamic && hasTouchedGround)
+        if (isMoving && hasTouchedGround)
         {
             rb.AddForce(Vector2.right * moveForce);
         }
@@ -44,16 +42,10 @@ public class CarController : MonoBehaviour
     public void StartMovement()
     {
         rb.bodyType = RigidbodyType2D.Dynamic;
-        rb.velocity = Vector2.zero; // Ngăn rơi lệch
-        rb.angularVelocity = 0f;
         isMoving = false;
-        hasTouchedGround = false;
-
         AudioManager.Instance.PlaySFX("start");
-
         StartCoroutine(StartCarAfterDelay(1f));
     }
-
 
     /// <summary>
     /// CHẠY XE
@@ -71,7 +63,6 @@ public class CarController : MonoBehaviour
     {
         isMoving = false;
         rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0f;
         AudioManager.Instance.StopSFX("running");
     }
 
@@ -82,7 +73,6 @@ public class CarController : MonoBehaviour
         transform.rotation = startRot;
         SetKinematic();
         hasTouchedGround = false;  
-       
     }
 
     public void Boost(float boostForce, float duration)
@@ -103,14 +93,9 @@ public class CarController : MonoBehaviour
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
 
-    public Rigidbody2D GetRigidbody()
-    {
-        return rb;
-    }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Gắn tag cho đường vẽ là "Ground"
+        //gắn tag cho đường là Ground
         if (collision.collider.CompareTag("Ground"))
         {
             hasTouchedGround = true;
